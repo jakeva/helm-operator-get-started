@@ -1,0 +1,30 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "bamboo-connector.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "bamboo-connector.fullname" . }}
+    helm.sh/chart: {{ include "bamboo-connector.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bamboo-connector.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "bamboo-connector.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "673102273038.dkr.ecr.us-west-2.amazonaws.com/bamboo_connector:git-6dc31ec4d60acf7add57705f69843d8ec43166c7"
+          imagePullPolicy: IfNotPresent
+          args: ["ruby", "server.rb"]
+          ports:
+            - name: http
+              containerPort: {{ .Values.web.port }}
+              protocol: TCP

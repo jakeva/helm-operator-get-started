@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bamboo-connector.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "bamboo-connector.fullname" . }}
+    helm.sh/chart: {{ include "bamboo-connector.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"80":"bamboo-connector-backendconfig"}}'
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: bamboo-connector-port
+  selector:
+    app.kubernetes.io/name: {{ include "bamboo-connector.fullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

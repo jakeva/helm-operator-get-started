@@ -1,0 +1,21 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "{{ template "bamboo-connector.fullname" . }}-ing"
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.allow-http: "false"
+{{- if .Values.server.ingress.extraAnnotations }}
+{{ toYaml .Values.server.ingress.extraAnnotations | indent 4 }}
+{{- end }}
+
+spec:
+  rules:
+    - host: {{ .Values.web.host }}
+      http:
+        paths:
+          - backend:
+              serviceName: "{{ template "bamboo-connector.fullname" . }}"
+              servicePort: bamboo-port
+            path: /*
